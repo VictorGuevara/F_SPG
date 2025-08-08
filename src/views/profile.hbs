@@ -1,0 +1,423 @@
+<div class="main_content">
+	<main>
+		<section class="titulo_sA">
+			<div class="title_seccion">
+				<h2 class="title_formne">El Salvador Express</h2>
+				<div class="mapa_secciones">
+					<span class="ms_principal">Administracíon</span>
+					<span> / </span>
+					<span class="ms_activa">Panel de datos de El Salvador</span>
+				</div>
+			</div>
+		</section>
+		<section class="recent">
+			<div class="activity_grid_oneC">
+				<div class="bday_card">
+				<form class="formne">
+					<div class="input_container_divitions">
+						<div class="input_group">
+							<label for="i_dash_carga">Número de carga:</label>
+							<input type="number" id="i_dash_carga" placeholder="Colocar el No. carga">
+						</div>
+						<div class="input_group">
+							<label for="i_dash_anioc">Año de carga:</label>
+							<input type="number" id="i_dash_anioc" placeholder="Colocar el Año de carga">
+						</div>
+					</div>
+				</form>
+				<div class="contenedor_graficos">
+					<h4 class="title_info_panel_datos">Encomiendas enviadas por meses de El Salvador:</h4>
+					<div class="g_100">
+						<canvas id="myChart"></canvas>
+					</div>
+					<br>
+					<div class="g_50">
+						<div>
+							<h4 class="title_info_panel_datos">Encomiendas a Estados Unidos por año:</h4>
+							<canvas id="myChart2"></canvas>
+						</div>
+						<div>
+							<h4 class="title_info_panel_datos">Clientes que enivaron de El Salvador por año:</h4>
+							<canvas id="myChart3"></canvas>
+						</div>
+
+					</div>
+					<br>
+					<h4 class="title_info_panel_datos">Peso enviado por meses de El Salvador:</h4>
+					<div class="g_100">
+						<canvas id="myChart4"></canvas>
+					</div>
+					<br>
+				</div>
+				<h4 class="title_info_panel_datos">Datos de Carga:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-truck"></span></h2>
+							<h1>Carga:</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_carga">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-harddrive"></span></h2>
+							<h1>Peso General</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_pesog">0.00</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Total De Encomiendas</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_ce">0</span>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos Houston Texas:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Encomiendas Houston</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_ceh">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-anchor"></span></h2>
+							<h1>Peso Houston</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="peso_ceh">0</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_h_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Houston</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mH">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_hc_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Cajas Houston</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mHC">0</span>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos Irving Texas:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Encomiendas Irving</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_cei">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-anchor"></span></h2>
+							<h1>Peso Irving</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="peso_cei">0</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_i_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Irving</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mI">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_ic_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Cajas Irving</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mIC">0</span>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos Austin Texas:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Encomiendas Austin</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_cea">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-anchor"></span></h2>
+							<h1>Peso Austin</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="peso_cea">0</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_a_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Austin</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mA">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_ac_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Cajas Austin</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mAC">0</span>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos San Antonio Texas:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Encomiendas San Antonio</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_cesa">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-anchor"></span></h2>
+							<h1>Peso San Antonio</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="peso_cesa">0</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_sa_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote San Antonio</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mSA">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_sac_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Cajas San Antonio</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mSAC">0</span>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos Interline:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Encomiendas Interline</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="dash_ceinter">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item">
+							<h2><span class="ti-anchor"></span></h2>
+							<h1>Peso Interline</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="peso_ceinter">0</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_in_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Interline</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mIN">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_inc_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Machote Cajas Interline</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_mINC">0</span>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos De Clientes De El Salvador:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item_doc" id="bnt_cobrosSV_list">
+							<h2><span class="ti-money"></span></h2>
+							<h1>Cobros De Encomiendas</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_cobrosUSA_list">
+							<h2><span class="ti-money"></span></h2>
+							<h1>Cobros De Encomiendas</h1>
+							<br>
+							<div class="dato_item">
+								<h3>EE:UU</h3>
+							</div>
+						</div>
+						<div class="box_item_doc hidden_div" id="bnt_gm_ndm_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Numero de Machotes</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_ndm">0</span>
+								</h3>
+							</div>
+						</div>
+					
+						<div class="box_item_doc" id="bnt_csv_list">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Clientes</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+						<div class="box_item_doc hidden_div" id="bnt_gm_ndm_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Numero de Machotes</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_ndm">0</span>
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc_gs" id="bnt_csv_lc_llamar">
+							<h2><span class="ti-reload"></span></h2>
+							<h1>Reponer Clientes a Llamar</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos De Productos:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item_doc" id="bnt_csv_list_productos">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Productos</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+					</div>
+					<h4 class="title_info_panel_datos">Datos De Clientes Global:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item">
+							<h2><span class="ti-anchor"></span></h2>
+							<h1>Peso Compras Revisadas</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									<span id="peso_cgs_sv">0</span> Lb.
+								</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_pesosGSSV_list">
+							<h2><span class="ti-package"></span></h2>
+							<h1>Peso De Compras</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_cobrosGSSV_list">
+							<h2><span class="ti-money"></span></h2>
+							<h1>Cobros De Compras</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+					</div>
+					
+					{{!-- <h4 class="title_info_panel_datos">Datos De Clientes:</h4>
+					<div class="div_container_grid_dash">
+						<div class="box_item_doc hidden_div" id="bnt_csv_list">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Clientes</h1>
+							<br>
+							<div class="dato_item">
+								<h3>SV</h3>
+							</div>
+						</div>
+						<div class="box_item_doc" id="bnt_gm_ndm_docx">
+							<h2><span class="ti-notepad"></span></h2>
+							<h1>Numero de Machotes</h1>
+							<br>
+							<div class="dato_item">
+								<h3>
+									Carga #<span id="carga_ndm">0</span>
+								</h3>
+							</div>
+						</div>
+					</div> --}}
+				</div>
+			</div>
+		</section>
+	</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

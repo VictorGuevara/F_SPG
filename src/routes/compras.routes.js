@@ -9,6 +9,11 @@ const path = require('path');
 const pool = require('../database');
 const { isLoggedIn, authCiudad } = require('../lib/auth');
 
+// Creamos la variable que guarda la ruta de la carpeta que contiene las facturas en JSON.
+const ruta_carp_descargas = path.join(process.env.HOME || process.env.USERPROFILE, 'Downloads');
+const carpetaOrigen = '/';
+const carpetaDestino = 'ComprasGuardadas';
+
 /* -------------------------------------------------------------------------- */
 /*                                   RUTAS                                    */
 /* -------------------------------------------------------------------------- */
@@ -21,11 +26,8 @@ router.get('/', isLoggedIn, async (req, res) => {
 
 // Ruta para listar los JSON de compras que no estan ingresadas.
 router.post('/list_compras_no_ingresadas', isLoggedIn, async (req, res) => {
-	// Creamos la variable que guarda la ruta de la carpeta que contiene las facturas en JSON.
-	const folderPath = path.join(process.env.HOME || process.env.USERPROFILE, 'Downloads');
-
 	// Leemos la carpeta y obetenemos todos los archivos JSON encontrados.
-	await fs.readdir(folderPath, (err, files) => {
+	await fs.readdir(ruta_carp_descargas, (err, files) => {
 		// Retornamos el mensaje de error si no existe la carpeta.
 		if (err) return res.send('Error leyendo la carpeta');
 
@@ -42,7 +44,7 @@ router.post('/list_compras_no_ingresadas', isLoggedIn, async (req, res) => {
 		// Recorremos los archivos y los leemos, para obtener sus datos.
 		for (let i = 0; i < cont_files_json; i++) {
 			const file = jsonFiles[i];
-			const filePath = path.join(folderPath, file);
+			const filePath = path.join(ruta_carp_descargas, file);
 			// Condicionamos para agregar los archivos que si se pueden leer de los que no al array.
 			try {
 				const rawData = fs.readFileSync(filePath, 'utf-8');
@@ -68,8 +70,7 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 	let dataDR = req.body.data_dr;
 
 	// Creamos la variable que busca la carpeta de descargas.
-	const folderPath = path.join(process.env.HOME || process.env.USERPROFILE, 'Downloads');
-	const filePath = path.join(folderPath, fileName);
+	const filePath = path.join(ruta_carp_descargas, fileName);
 
 	// Leemos y parseamos el archivo JSON
 	const rawData = fs.readFileSync(filePath, 'utf-8');
@@ -194,6 +195,7 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 		async (error, rows, fields) => {
 			// Validamos:
 			if (!error && rows.length > 0) {
+				// Si no existe error, devolvemos el mensaje.
 				res.json({ mensaje: 'La factura ya ha sido ingresada con el codigo de control porporcionado.' });
 			} else {
 				// Ejecutamos la consulta para guardar la compra mediante el JSON.
@@ -295,8 +297,27 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 					[array_productos],
 					(error, rows, fields) => {
 						if (!error) {
-							// Si no existe error, devolvemos el mensaje.
-							res.json({ mensaje: 'Compra guardada.' });
+							// Hacemos las rutas de ruta de origen y destino del archivo JSON.
+							const rutaOrigen = path.join(ruta_carp_descargas, carpetaOrigen, fileName);
+							const rutaDestino = path.join(ruta_carp_descargas, carpetaDestino, fileName);
+
+							// Verificamos si el archivo existe.
+							if (!fs.existsSync(rutaOrigen)) {
+								return;
+							}
+
+							// Creamos la carpeta destino si no existe.
+							if (!fs.existsSync(path.join(ruta_carp_descargas, carpetaDestino))) {
+								fs.mkdirSync(path.join(ruta_carp_descargas, carpetaDestino), { recursive: true });
+							}
+
+							// Mueve el archivo
+							fs.rename(rutaOrigen, rutaDestino, (err) => {
+								if (!err) {
+									// Si no existe error, devolvemos el mensaje.
+									res.json({ mensaje: 'Compra guardada.' });
+								}
+							});
 						} else {
 							// SI EXISTE UN ERROR, MOSTRAMOS EL ERROR POR CONSOLA.
 							console.log(error);

@@ -233,18 +233,29 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 		.then((response) => response.json())
 		.then((datos) => {
 			if (datos.mensaje == 'Compra guardada.') {
-				setTimeout(() => {
-					Swal.fire({
+				setTimeout(async () => {
+					await Swal.fire({
 						icon: 'success',
 						title: datos.mensaje,
 					});
+					await leer_json_data();
 				}, 250);
 			} else if (datos.mensaje == 'La factura ya ha sido ingresada con el codigo de control porporcionado.') {
-				setTimeout(() => {
-					Swal.fire({
+				setTimeout(async () => {
+					await Swal.fire({
 						icon: 'warning',
 						text: datos.mensaje,
 					});
+					await leer_json_data();
+				}, 250);
+			} else if (datos.mensaje == 'No existe el archivo.') {
+				setTimeout(async () => {
+					await Swal.fire({
+						icon: 'warning',
+						title: datos.mensaje,
+						text: 'Probablemente ubo un error al mover el archivo al momento de guardarlo.',
+					});
+					await leer_json_data();
 				}, 250);
 			}
 		})

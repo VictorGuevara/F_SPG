@@ -58,8 +58,11 @@ router.post('/list_compras_no_ingresadas', isLoggedIn, async (req, res) => {
 			}
 		}
 
+		// Rutas de carpetas a utilizar.
+		let carpetas = [ruta_carp_descargas + carpetaOrigen, ruta_carp_descargas + '/' + carpetaDestino];
+
 		// Devolvemos el array de datos.
-		res.json({ files: dataRows });
+		res.json({ files: dataRows, carpetas });
 	});
 });
 
@@ -325,6 +328,53 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 					}
 				);
 			}
+		}
+	);
+});
+
+// Ruta para listar los proveedores.
+router.post('/list_proveedores', isLoggedIn, async (req, res) => {
+	// Obtenemos el dato enviado por el usuario.
+	let nombreProveedor = '%' + req.body.provName + '%';
+
+	// Hacemos la consulta que nos devuelve el nombre de los proveedores.
+	await pool.query(
+		`SELECT DISTINCT emisor_nombre FROM fsp_compras_si WHERE emisor_nombre LIKE ? ORDER BY emisor_nombre ASC LIMIT 25`,
+		[nombreProveedor],
+		async (error, rows, fields) => {
+			res.json(rows);
+		}
+	);
+});
+
+// Ruta para listar los proveedores.
+router.post('/list_productos', isLoggedIn, async (req, res) => {
+	// Obtenemos el dato enviado por el usuario.
+	let nombreProducto = '%' + req.body.prodName + '%';
+
+	// Hacemos la consulta que nos devuelve el nombre de los proveedores.
+	await pool.query(
+		`SELECT DISTINCT f_cuerpoDoc_descripcion FROM fsp_compras_si WHERE f_cuerpoDoc_descripcion LIKE ? ORDER BY f_cuerpoDoc_descripcion ASC LIMIT 25`,
+		[nombreProducto],
+		async (error, rows, fields) => {
+			res.json(rows);
+		}
+	);
+});
+
+// Ruta para listar las compras guard
+router.post('/list_compras_SI', isLoggedIn, async (req, res) => {
+	let f_i = req.body.fecha_i;
+	let f_f = req.body.fecha_f;
+	let n_prov = '%' + req.body.nombre_proveedor + '%';
+	let n_prod = '%' + req.body.nombre_producto + '%';
+
+	// Hacemos una validación del código de generación de hacienda para que no se repita.
+	await pool.query(
+		`SELECT * FROM fsp_compras_si WHERE (ident_fecEmi BETWEEN ? AND ?) OR emisor_nombre LIKE ? OR f_cuerpoDoc_descripcion LIKE ?`,
+		[f_i, f_f, n_prov, n_prod],
+		async (error, rows, fields) => {
+			res.json(rows);
 		}
 	);
 });

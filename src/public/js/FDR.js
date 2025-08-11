@@ -6,8 +6,9 @@
 
 let date = new Date();
 let anio_actual = date.getFullYear();
-let tab_buttons = document.querySelectorAll(".tab-button");
-let tab_panels = document.querySelectorAll(".tab-panel");
+let tab_buttons = document.querySelectorAll('.tab-button');
+let tab_panels = document.querySelectorAll('.tab-panel');
+let infoPest = document.querySelectorAll('.json_cargar');
 
 /* -------------------------------------------------------------------------- */
 /*                                                                            */
@@ -29,19 +30,19 @@ const fecha_a = () => {
 
 	// Validamos que la fecha sea legible con cero en el mes...
 	if (dia_actual < 10) {
-		dia = "0" + dia_actual;
+		dia = '0' + dia_actual;
 	} else {
 		dia = dia_actual;
 	}
 
 	// Validamos que el día sea legible con cero en el inicio...
 	if (mes_actual < 10) {
-		mes = "0" + mes_actual;
+		mes = '0' + mes_actual;
 	} else {
 		mes = mes_actual;
 	}
 
-	fecha = anio_actual + "-" + mes + "-" + dia;
+	fecha = anio_actual + '-' + mes + '-' + dia;
 
 	return fecha;
 };
@@ -60,14 +61,14 @@ const fecha_d_a = () => {
 
 	// Validamos que la fecha sea legible con cero en el mes...
 	if (dia_actual < 10) {
-		dia = "0" + dia_actual;
+		dia = '0' + dia_actual;
 	} else {
 		dia = dia_actual;
 	}
 
 	// Validamos que el día sea legible con cero en el inicio...
 	if (mes_actual < 10) {
-		mes = "0" + mes_actual;
+		mes = '0' + mes_actual;
 	} else {
 		mes = mes_actual;
 	}
@@ -95,19 +96,19 @@ const fecha_hora_a = () => {
 
 	// Validamos que la fecha sea legible con cero en el mes...
 	if (dia_actual < 10) {
-		dia = "0" + dia_actual;
+		dia = '0' + dia_actual;
 	} else {
 		dia = dia_actual;
 	}
 
 	// Validamos que el día sea legible con cero en el inicio...
 	if (mes_actual < 10) {
-		mes = "0" + mes_actual;
+		mes = '0' + mes_actual;
 	} else {
 		mes = mes_actual;
 	}
 
-	fecha = anio_actual + "-" + mes + "-" + dia;
+	fecha = anio_actual + '-' + mes + '-' + dia;
 
 	let hora_actual = date.getHours();
 	let minutos_actual = date.getMinutes();
@@ -119,28 +120,28 @@ const fecha_hora_a = () => {
 
 	// Validamos que la fecha sea legible con cero en el mes...
 	if (hora_actual < 10) {
-		hora_a = "0" + hora_actual;
+		hora_a = '0' + hora_actual;
 	} else {
 		hora_a = hora_actual;
 	}
 
 	// Validamos que la fecha sea legible con cero en el mes...
 	if (minutos_actual < 10) {
-		minutos = "0" + minutos_actual;
+		minutos = '0' + minutos_actual;
 	} else {
 		minutos = minutos_actual;
 	}
 
 	// Validamos que el día sea legible con cero en el inicio...
 	if (segundos_actual < 10) {
-		segundos = "0" + segundos_actual;
+		segundos = '0' + segundos_actual;
 	} else {
 		segundos = segundos_actual;
 	}
 
-	hora = hora_a + ":" + minutos + ":" + segundos;
+	hora = hora_a + ':' + minutos + ':' + segundos;
 
-	let fecha_Hora = fecha + " " + hora;
+	let fecha_Hora = fecha + ' ' + hora;
 
 	return fecha_Hora;
 };
@@ -159,20 +160,20 @@ const fecha_sum = (dias) => {
 
 	// Validamos que la fecha sea legible con cero en el mes...
 	if (dia_actual < 10) {
-		dia = "0" + dia_actual;
+		dia = '0' + dia_actual;
 	} else {
 		dia = dia_actual;
 	}
 
 	// Validamos que el día sea legible con cero en el inicio...
 	if (mes_actual < 10) {
-		mes = "0" + mes_actual;
+		mes = '0' + mes_actual;
 	} else {
 		mes = mes_actual;
 	}
 
 	// Creamos la fecha.
-	fecha = anio_actual + "-" + mes + "-" + dia;
+	fecha = anio_actual + '-' + mes + '-' + dia;
 
 	// Retornamos la fecha.
 	return fecha;
@@ -183,7 +184,7 @@ const fecha_sum = (dias) => {
 /* ---------------------------------------------------- */
 const Toast = Swal.mixin({
 	toast: true,
-	position: "bottom-end",
+	position: 'bottom-end',
 	showConfirmButton: false,
 	timer: 3000,
 	timerProgressBar: true,
@@ -206,9 +207,9 @@ const g_newCodCsv = async (max, min) => {
 /* Función que se llama para descargar los listados. */
 /* ------------------------------------------------- */
 const descargar_listado = (url, name_archive) => {
-	const domloadInstance = document.createElement("a");
+	const domloadInstance = document.createElement('a');
 	domloadInstance.href = url;
-	domloadInstance.target = "_blank";
+	domloadInstance.target = '_blank';
 	domloadInstance.download = name_archive;
 
 	document.body.appendChild(domloadInstance);
@@ -219,9 +220,9 @@ const descargar_listado = (url, name_archive) => {
 /* Función que se llama para descargar los recibos. */
 /* ------------------------------------------------ */
 const descargar_recibos = (url, name_archive) => {
-	const domloadInstance = document.createElement("a");
+	const domloadInstance = document.createElement('a');
 	domloadInstance.href = url;
-	domloadInstance.target = "_blank";
+	domloadInstance.target = '_blank';
 	domloadInstance.download = name_archive;
 
 	document.body.appendChild(domloadInstance);
@@ -233,9 +234,9 @@ const descargar_recibos = (url, name_archive) => {
 /* ------------------------------------------------------------------ */
 // Función que se llama pra descargar los machotes...
 const descargar_machote = (url, name_archive) => {
-	const domloadInstance = document.createElement("a");
+	const domloadInstance = document.createElement('a');
 	domloadInstance.href = url;
-	domloadInstance.target = "_blank";
+	domloadInstance.target = '_blank';
 	domloadInstance.download = name_archive;
 
 	document.body.appendChild(domloadInstance);
@@ -246,9 +247,9 @@ const descargar_machote = (url, name_archive) => {
 /* Función que se llama pra descargar los machotes de Estados Unidos. */
 /* ------------------------------------------------------------------ */
 const descargar_machote_usa = (url, name_archive) => {
-	const domloadInstance = document.createElement("a");
+	const domloadInstance = document.createElement('a');
 	domloadInstance.href = url;
-	domloadInstance.target = "_blank";
+	domloadInstance.target = '_blank';
 	domloadInstance.download = name_archive;
 
 	document.body.appendChild(domloadInstance);
@@ -269,14 +270,16 @@ const enter_block = (event) => {
 /* Funcion para las pestañas del contenido.  */
 /* ----------------------------------------- */
 tab_buttons.forEach((button) => {
-	button.addEventListener("click", () => {
+	button.addEventListener('click', () => {
 		// Eliminar la clase 'active' de todos los botones y paneles
-		tab_buttons.forEach((btn) => btn.classList.remove("active"));
-		tab_panels.forEach((panel) => panel.classList.remove("active"));
+		tab_buttons.forEach((btn) => btn.classList.remove('active'));
+		tab_panels.forEach((panel) => panel.classList.remove('active'));
+		infoPest.forEach((pestania) => pestania.classList.remove('active'));
 
 		// Activar el botón y panel correspondiente
-		button.classList.add("active");
-		const tabId = button.getAttribute("data-tab");
-		document.getElementById(`tab-${tabId}`).classList.add("active");
+		button.classList.add('active');
+		const tabId = button.getAttribute('data-tab');
+		document.getElementById(`tab-${tabId}`).classList.add('active');
+		document.getElementById(`info_pestania-${tabId}`).classList.add('active');
 	});
 });

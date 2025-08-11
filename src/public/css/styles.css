@@ -406,7 +406,6 @@ form.formne input[type='submit']:hover {
 
 .tabs {
   width: 100%;
-  max-width: 75%;
 }
 
 .tab-buttons {
@@ -451,6 +450,10 @@ form.formne input[type='submit']:hover {
   display: block;
 }
 
+.json_cargar.active {
+  display: block;
+}
+
 .content_totales {
   display: flex;
   align-items: end;
@@ -459,6 +462,12 @@ form.formne input[type='submit']:hover {
 }
 
 /* Seccion de compras no ingresadas */
+
+.vista_compras {
+  display: grid;
+  grid-template-columns: 75% 22%;
+  grid-gap: 1%;
+}
 
 article {
   display: grid;
@@ -522,7 +531,7 @@ section.facE_acciones {
 h1 {
   font-size: 35px;
   font-weight: bold;
-  margin: 20px 0;
+  margin: 20px 0 10px 0;
   text-transform: uppercase;
 }
 
@@ -532,16 +541,17 @@ h2 {
 }
 
 h3.ruta_system {
-  color: var(--text_label_form);
+  color: var(--main_color);
+  font-size: 15px;
   font-weight: 500;
   background: var(--border_gris_ultraclaro);
-  padding: 15px 10px;
-  max-width: 75%;
+  padding: 10px;
+  max-width: 98%;
   border-radius: 5px;
 }
 
 section {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 p {
@@ -622,4 +632,89 @@ ul {
   background: var(--color_danger);
   color: var(--color_white);
   transition: 0.03s;
+}
+
+.json_cargar {
+  display: none;
+  border: 1px solid var(--text_grey);
+  box-shadow: none;
+  padding: 10px;
+}
+
+.json_cargar h1 {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--main_color);
+  margin-bottom: 10px;
+}
+
+.json_cargar h1.info {
+  font-size: 20px;
+  color: var(--color_negro);
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.json_cargar h3.info {
+  font-size: 12px;
+  color: var(--color_negro);
+  font-weight: bold;
+  background: var(--border_gris_ultraclaro);
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+/* Tablas */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: left;
+}
+
+td {
+  font-size: 15px;
+  color: var(--text_label_form);
+}
+
+thead {
+  background-color: #007acc;
+  color: white;
+}
+
+.input_filter_table {
+  color: var(--main_color);
+  font-size: 20px;
+  padding: 5px 10px;
+  border: 1px solid var(--text_grey);
+}
+
+button.filtar_table {
+  font-size: 15px;
+  font-weight: bold;
+  padding: 8px 10px 7px 10px;
+  border-radius: none;
+  border: 1px solid var(--main_color);
+  background: var(--main_color);
+  color: var(--color_white);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.5s;
+}
+
+button.filtar_table:hover {
+  border: 1px solid var(--color_celeste);
+  background: var(--color_celeste);
+  transition: 0.5s;
 }

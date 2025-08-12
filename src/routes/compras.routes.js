@@ -47,7 +47,14 @@ router.post('/list_compras_no_ingresadas', isLoggedIn, async (req, res) => {
 			const filePath = path.join(ruta_carp_descargas, file);
 			// Condicionamos para agregar los archivos que si se pueden leer de los que no al array.
 			try {
-				const rawData = fs.readFileSync(filePath, 'utf-8');
+				let rawData = fs.readFileSync(filePath, 'utf-8');
+
+				// Quitamos los espacios en blanco.
+				if (rawData.charCodeAt(0) === 0xfeff) {
+					rawData = rawData.slice(1);
+				}
+
+				// Parsiamos el dato json.
 				const jsonData = JSON.parse(rawData);
 				dataRows.push({ file, ...jsonData });
 			} catch (err) {
@@ -76,7 +83,14 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 	const filePath = path.join(ruta_carp_descargas, fileName);
 
 	// Leemos y parseamos el archivo JSON
-	const rawData = fs.readFileSync(filePath, 'utf-8');
+	let rawData = fs.readFileSync(filePath, 'utf-8');
+
+	// Quitamos los espacios en blanco.
+	if (rawData.charCodeAt(0) === 0xfeff) {
+		rawData = rawData.slice(1);
+	}
+
+	// Parsiamos el dato json.
 	const jsonData = JSON.parse(rawData);
 
 	// Contamos cuantos productos trae el JSON.
@@ -347,32 +361,15 @@ router.post('/list_proveedores', isLoggedIn, async (req, res) => {
 	);
 });
 
-// Ruta para listar los proveedores.
-router.post('/list_productos', isLoggedIn, async (req, res) => {
-	// Obtenemos el dato enviado por el usuario.
-	let nombreProducto = '%' + req.body.prodName + '%';
-
-	// Hacemos la consulta que nos devuelve el nombre de los proveedores.
-	await pool.query(
-		`SELECT DISTINCT f_cuerpoDoc_descripcion FROM fsp_compras_si WHERE f_cuerpoDoc_descripcion LIKE ? ORDER BY f_cuerpoDoc_descripcion ASC LIMIT 25`,
-		[nombreProducto],
-		async (error, rows, fields) => {
-			res.json(rows);
-		}
-	);
-});
-
 // Ruta para listar las compras guard
 router.post('/list_compras_SI', isLoggedIn, async (req, res) => {
 	let f_i = req.body.fecha_i;
 	let f_f = req.body.fecha_f;
 	let n_prov = '%' + req.body.nombre_proveedor + '%';
-	let n_prod = '%' + req.body.nombre_producto + '%';
-
 	// Hacemos una validación del código de generación de hacienda para que no se repita.
 	await pool.query(
-		`SELECT * FROM fsp_compras_si WHERE (ident_fecEmi BETWEEN ? AND ?) OR emisor_nombre LIKE ? OR f_cuerpoDoc_descripcion LIKE ?`,
-		[f_i, f_f, n_prov, n_prod],
+		`SELECT DISTINCT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_totalPagar FROM fsp_compras_si WHERE (ident_fecEmi BETWEEN ? AND ?) OR emisor_nombre LIKE ?`,
+		[f_i, f_f, n_prov],
 		async (error, rows, fields) => {
 			res.json(rows);
 		}

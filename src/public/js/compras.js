@@ -12,7 +12,6 @@ let fecha_final = document.getElementById('fecha_final');
 let nompre_proveedor = document.getElementById('busqueda_proveedor');
 let nompre_producto = document.getElementById('busqueda_prodcuto');
 let listProveedores = document.getElementById('lista_proveedores');
-let listProductos = document.getElementById('lista_productos');
 let tbody_cg = document.getElementById('tableBody');
 
 // De información.
@@ -156,7 +155,7 @@ const leer_json_data = async () => {
 
 						// Limpiamos la variable para que guarde las nuevas filas de productos.
 						filas_productos = '';
-					} else if (control_text.indexOf('DTE-03') !== -1) {
+					} else {
 						// Datos de documentos relacionados.
 						let d_r = [0, 0, 0, 0];
 
@@ -326,33 +325,6 @@ const list_proveedores = async () => {
 		});
 };
 
-// Función que lista los productos para la lista del campo.
-const list_productos = async () => {
-	// Objeto de datos.
-	let dae = {
-		prodName: nompre_producto.value,
-	};
-
-	// consultamos para guardar los datos de los clientes en la encomienda...
-	await fetch('/compras/list_productos', {
-		method: 'POST',
-		body: JSON.stringify(dae),
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	})
-		.then((response) => response.json())
-		.then((datos) => {
-			listProductos.innerHTML = '';
-			for (var i = 0; i < datos.length; i++) {
-				listProductos.innerHTML += `<option value="${datos[i].f_cuerpoDoc_descripcion}">`;
-			}
-		})
-		.catch((error) => {
-			console.error('Ocurrio un error: ', error);
-		});
-};
-
 // Función que lista los datos en la tabla de compras guardadas.
 const list_compras_guardadas = async () => {
 	// Validamos que los datos no esten vacios.
@@ -366,7 +338,6 @@ const list_compras_guardadas = async () => {
 		fecha_i: fecha_inicio.value,
 		fecha_f: fecha_final.value,
 		nombre_proveedor: nompre_proveedor.value,
-		nombre_producto: nompre_producto.value,
 	};
 
 	// consultamos para guardar los datos de los clientes en la encomienda...
@@ -383,12 +354,10 @@ const list_compras_guardadas = async () => {
 			for (var i = 0; i < datos.length; i++) {
 				tbody_cg.innerHTML += `
 					<tr>
+                        <td><input type="checkbox"></td>
+                        <td>${datos[i].ident_numeroControl}</td>
                         <td>${datos[i].emisor_nombre}</td>
-                        <td>${datos[i].f_cuerpoDoc_descripcion}</td>
-                        <td>${datos[i].f_cuerpoDoc_cantidad}</td>
-                        <td>$ ${datos[i].f_cuerpoDoc_precioUni}</td>
-                        <td>$ ${datos[i].f_cuerpoDoc_montoDescu}</td>
-                        <td>$ ${datos[i].f_cuerpoDoc_ventaGravada}</td>
+                        <td>$ ${datos[i].resumen_totalPagar}</td>
                     </tr>
 				`;
 			}
@@ -407,19 +376,11 @@ const list_compras_guardadas = async () => {
 // Ejecutamos la función al inicio..
 leer_json_data();
 list_proveedores();
-list_productos();
 list_compras_guardadas();
 
 // Evento de escritura para el campo de proveedores
 nompre_proveedor.addEventListener('input', (event) => {
 	event.preventDefault();
 	list_proveedores();
-	list_compras_guardadas();
-});
-
-// Evento de escritura para el campo de producto.
-nompre_producto.addEventListener('input', (event) => {
-	event.preventDefault();
-	list_productos();
 	list_compras_guardadas();
 });

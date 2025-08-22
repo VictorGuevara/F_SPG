@@ -201,6 +201,7 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 
 			// Datos del sello de recibido.
 			jsonData.selloRecibido,
+			'No Pagado',
 		];
 		array_productos.push(producto_objet);
 	}
@@ -308,7 +309,8 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 						resumen_pagos, 
 						resumen_numPagoElectronico, 
 					
-						sr_selloRecibido
+						sr_selloRecibido,
+						estado_pago
 					) VALUES ?
 				`,
 					[array_productos],
@@ -366,14 +368,47 @@ router.post('/list_compras_SI', isLoggedIn, async (req, res) => {
 	let f_i = req.body.fecha_i;
 	let f_f = req.body.fecha_f;
 	let n_prov = '%' + req.body.nombre_proveedor + '%';
-	// Hacemos una validación del código de generación de hacienda para que no se repita.
-	await pool.query(
-		`SELECT DISTINCT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_totalPagar FROM fsp_compras_si WHERE (ident_fecEmi BETWEEN ? AND ?) OR emisor_nombre LIKE ?`,
-		[f_i, f_f, n_prov],
-		async (error, rows, fields) => {
-			res.json(rows);
+	let estado = 'No Pagado';
+
+	// Hacemos una validación.
+	if (n_prov == '%%') {
+		await pool.query(
+			`SELECT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_montoTotalOperacion, resumen_totalPagar, estado_pago FROM fsp_compras_si WHERE estado_pago = ? AND (ident_fecEmi BETWEEN ? AND ?) OR emisor_nombre LIKE ? GROUP BY ident_codigoGeneracion`,
+			[estado, f_i, f_f, n_prov, estado],
+			async (error, rows, fields) => {
+				res.json(rows);
+			}
+		);
+	} else {
+		await pool.query(
+			`SELECT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_montoTotalOperacion, resumen_totalPagar, estado_pago FROM fsp_compras_si WHERE estado_pago = ? AND (ident_fecEmi BETWEEN ? AND ?) AND emisor_nombre LIKE ? GROUP BY ident_codigoGeneracion`,
+			[estado, f_i, f_f, n_prov],
+			async (error, rows, fields) => {
+				res.json(rows);
+			}
+		);
+	}
+});
+
+// Ruta para actuzalizar las filas seleccionadas en pagos...
+router.post('/g_compras_pagadas', isLoggedIn, async (req, res) => {
+	// Datos a actualizar
+	let updates = req.body;
+
+	// Construcción de la consulta SQL
+	let sql = `
+		UPDATE fsp_compras_si 
+		SET estado_pago = CASE ident_codigoGeneracion ${updates.map((u) => `WHEN '${u.id}' THEN '${u.estado}'`).join(' ')} END
+		WHERE ident_codigoGeneracion IN ('${updates.map((u) => u.id).join(', ')}');
+	`;
+
+	// Ejecución de la consulta
+	await pool.query(sql, async (error, rows, fields) => {
+		if (!error) {
+			// Si no existe error, devolvemos el mensaje.
+			res.json({ mensaje: 'Compras pagadas.' });
 		}
-	);
+	});
 });
 
 /* -------------------------------------------------------------------------- */

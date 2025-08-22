@@ -10,9 +10,10 @@ const list_jsonComprasNoIngresadas = document.getElementById('list_jsonComprasNo
 let fecha_inicio = document.getElementById('fecha_inicio');
 let fecha_final = document.getElementById('fecha_final');
 let nompre_proveedor = document.getElementById('busqueda_proveedor');
-let nompre_producto = document.getElementById('busqueda_prodcuto');
 let listProveedores = document.getElementById('lista_proveedores');
+let btnFilter = document.getElementById('btn_filter');
 let tbody_cg = document.getElementById('tableBody');
+let btnPagar = document.getElementById('btn_pagar_pagadas');
 
 // De información.
 let ruta_carga = document.getElementById('h3_ruta_carga');
@@ -273,6 +274,8 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 						title: datos.mensaje,
 					});
 					await leer_json_data();
+					await list_proveedores();
+					await list_compras_guardadas();
 				}, 250);
 			} else if (datos.mensaje == 'La factura ya ha sido ingresada con el codigo de control porporcionado.') {
 				setTimeout(async () => {
@@ -281,6 +284,8 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 						text: datos.mensaje,
 					});
 					await leer_json_data();
+					await list_proveedores();
+					await list_compras_guardadas();
 				}, 250);
 			} else if (datos.mensaje == 'No existe el archivo.') {
 				setTimeout(async () => {
@@ -290,6 +295,8 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 						text: 'Probablemente ubo un error al mover el archivo al momento de guardarlo.',
 					});
 					await leer_json_data();
+					await list_proveedores();
+					await list_compras_guardadas();
 				}, 250);
 			}
 		})
@@ -352,12 +359,32 @@ const list_compras_guardadas = async () => {
 		.then((datos) => {
 			tbody_cg.innerHTML = '';
 			for (var i = 0; i < datos.length; i++) {
+				let clase_css_tr = '';
+				let tipe_check_nc = '';
+				let total_factura = 0;
+				let nControlDTE = JSON.stringify(datos[i].ident_numeroControl).replace(/"/g, '');
+
+				// Validamos si es nota de crédito...
+				if (nControlDTE.indexOf('DTE-05') !== -1) {
+					clase_css_tr = 'red';
+					tipe_check_nc = '_ntc';
+					total_factura = datos[i].resumen_montoTotalOperacion;
+				} else {
+					tipe_check_nc = '';
+					clase_css_tr = '';
+					total_factura = datos[i].resumen_totalPagar;
+				}
+
 				tbody_cg.innerHTML += `
-					<tr>
-                        <td><input type="checkbox"></td>
-                        <td>${datos[i].ident_numeroControl}</td>
+					<tr class="${clase_css_tr}">
+                        <td class="center_text"><input type="checkbox" class="fila_checkbox${tipe_check_nc}"></td>
+                        <td><input type="hidden" name="id_h_codGeneracion" value="${datos[i].ident_codigoGeneracion}">${datos[i].ident_numeroControl}</td>
                         <td>${datos[i].emisor_nombre}</td>
-                        <td>$ ${datos[i].resumen_totalPagar}</td>
+                        <td>$ <span class="valor">${total_factura}</span></td>
+                        <td><span class="valor">${datos[i].estado_pago}</span></td>
+                        <td class="center_text">
+                        	<button class="btn_table_delete"><i class="ti-trash"></i></button>
+                        </td>
                     </tr>
 				`;
 			}
@@ -365,6 +392,134 @@ const list_compras_guardadas = async () => {
 		.catch((error) => {
 			console.error('Ocurrio un error: ', error);
 		});
+
+	await actualizarTotal();
+};
+
+const actualizarTotal = () => {
+	// Variables que capturan los datos.
+	let checkboxes = document.querySelectorAll('.fila_checkbox');
+	let checkboxes_nt = document.querySelectorAll('.fila_checkbox_ntc');
+	let totalSpan_nnc = document.getElementById('info_total_nnc');
+	let totalSpan_nc = document.getElementById('info_total_nc');
+	let totalSpan = document.getElementById('info_total');
+	let total_nnc = 0;
+	let total_nc = 0;
+	let total = 0;
+
+	// Recorremos los checkbox que no son de filas de notas de credito.
+	checkboxes.forEach((checkbox) => {
+		if (checkbox.checked) {
+			const fila = checkbox.closest('tr');
+			const valor = parseFloat(fila.querySelector('.valor').textContent);
+			total_nnc += valor;
+		}
+	});
+
+	// Recorremos los checkbox que son de filas de notas de credito.
+	checkboxes_nt.forEach((checkbox) => {
+		if (checkbox.checked) {
+			const fila = checkbox.closest('tr');
+			const valor = parseFloat(fila.querySelector('.valor').textContent);
+			total_nc += valor;
+		}
+	});
+
+	// Pintamos los totales.
+	totalSpan_nnc.textContent = total_nnc.toFixed(2);
+	totalSpan_nc.textContent = total_nc.toFixed(2);
+	total = total_nnc.toFixed(2) - total_nc.toFixed(2);
+	totalSpan.textContent = total.toFixed(2);
+
+	// Colocamos a cada checkbox su función.
+	checkboxes.forEach((checkbox) => {
+		checkbox.addEventListener('change', actualizarTotal);
+	});
+
+	checkboxes_nt.forEach((checkbox) => {
+		checkbox.addEventListener('change', actualizarTotal);
+	});
+};
+
+// Función para pagar las compras y notas de créditos seleccionados..
+const guardar_cnc_selecionados = async () => {
+	const tbody = document.getElementById('tableBody');
+	const filas = tbody.getElementsByTagName('tr');
+	const seleccionadas = [];
+	let total_creditos = parseFloat(document.getElementById('info_total_nnc').innerText);
+	let total_notasCreditos = parseFloat(document.getElementById('info_total_nc').innerText);
+
+	for (let i = 0; i < filas.length; i++) {
+		const checkbox = filas[i].querySelector("input[type='checkbox']");
+		if (checkbox && checkbox.checked) {
+			seleccionadas.push(filas[i]);
+		}
+	}
+
+	let filas_selec = seleccionadas.length;
+
+	// Validamos que los campos requeridos esten llenos.
+	if (nompre_proveedor.value == '') {
+		await Swal.fire({
+			icon: 'error',
+			title: 'Campo Requerido',
+			text: 'Por favor, seleccione el nombre del Proveedor o Drogueria.',
+		});
+	} else if (filas_selec <= 0) {
+		await Swal.fire({
+			icon: 'error',
+			title: 'Campo Requerido',
+			text: 'Por favor, seleccione al menos una de las filas de la tabla.',
+		});
+	} else if (filas_selec > 0 && total_notasCreditos >= total_creditos) {
+		await Swal.fire({
+			icon: 'error',
+			title: 'Montos no operables',
+			text: 'El monto de la Nota/s De Crédito/s seleccionada/s, supera al monto de la/s factura/s de crédito/s seleccionado/s.',
+		});
+	} else {
+		// Array que guarda los datos a acutalizar...
+		let datos_actualizar = [];
+
+		// Recorremos todas las filas seleccionadas.
+		for (let i = 0; i < filas_selec; i++) {
+			const checkbox = filas[i].querySelector("input[type='checkbox']");
+			const idhCodGeneracion = filas[i].querySelector("input[name='id_h_codGeneracion']");
+			if (checkbox && checkbox.checked) {
+				let n_proveedor = nompre_proveedor.value;
+				let n_generacion = idhCodGeneracion.value;
+				let monto = parseFloat(filas[i].querySelector('td span.valor').innerText);
+
+				// Agregamos los objetos de datos...
+				datos_actualizar.push({ id: n_generacion, proveedor: n_proveedor, monto: monto, estado: 'Pagado' });
+			}
+		}
+
+		await fetch('/compras/g_compras_pagadas', {
+			method: 'POST',
+			body: JSON.stringify(datos_actualizar),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then((response) => response.json())
+			.then((datos) => {
+				if (datos.mensaje == 'Compras pagadas.') {
+					setTimeout(async () => {
+						await Swal.fire({
+							icon: 'success',
+							title: datos.mensaje,
+						});
+						await leer_json_data();
+						await list_proveedores();
+						await list_compras_guardadas();
+					}, 250);
+				}
+			})
+			.catch((error) => {
+				console.error('Ocurrio un error: ', error);
+			});
+	}
 };
 
 /* -------------------------------------------------------------------------- */
@@ -374,13 +529,34 @@ const list_compras_guardadas = async () => {
 /* -------------------------------------------------------------------------- */
 
 // Ejecutamos la función al inicio..
-leer_json_data();
-list_proveedores();
-list_compras_guardadas();
+setTimeout(async () => {
+	await leer_json_data();
+	await list_proveedores();
+	await list_compras_guardadas();
+	await actualizarTotal();
+}, 500);
 
 // Evento de escritura para el campo de proveedores
-nompre_proveedor.addEventListener('input', (event) => {
+nompre_proveedor.addEventListener('input', async (event) => {
 	event.preventDefault();
-	list_proveedores();
-	list_compras_guardadas();
+	await list_proveedores();
+	await list_compras_guardadas();
+});
+
+// Evento doble clic para limpiar el campo de proveedor.
+nompre_proveedor.addEventListener('dblclick', async (event) => {
+	event.preventDefault();
+	nompre_proveedor.value = '';
+});
+
+// Evento clic para el boton de filtrar
+btnFilter.addEventListener('click', async (event) => {
+	event.preventDefault();
+	await list_compras_guardadas();
+});
+
+// Evento click para le boton de pagar seleccionadas.
+btnPagar.addEventListener('click', async (event) => {
+	event.preventDefault();
+	await guardar_cnc_selecionados();
 });

@@ -10,6 +10,7 @@
 			<div class="tab-buttons">
 				<button class="tab-button active" data-tab="1">COMPRAS POR INGRESAR</button>
 				<button class="tab-button" data-tab="2">COMPRAS INGRESADAS</button>
+        <button class="tab-button" data-tab="3">COMPRAS PAGADAS</button>
 			</div>
 			<div class="tab-content">
 				<section class="tab-panel active" id="tab-1">
@@ -24,7 +25,7 @@
               <input class="input_filter_table" type="date" id="fecha_inicio">
               <input class="input_filter_table" type="date" id="fecha_final">
               <input class="input_filter_table" type="text" id="busqueda_proveedor" list="lista_proveedores">
-              <button class="filtar_table">Filtrar</button>
+              <button class="filtar_table" id="btn_filter">Filtrar</button>
               <datalist id="lista_proveedores"></datalist>
               <option value=""></option>
             </div>
@@ -32,16 +33,19 @@
                   <table>
                     <thead>
                       <tr>
-                        <th>¿Elegir?</th>
+                        <th class="center_text"><i class="ti-check-box"></i></th>
                         <th>No. DTE:</th>
                         <th>PROVEEDOR:</th>
                         <th>TOTAL:</th>
+                        <th>ESTADO:</th>
+                        <th class="center_text"><i class="ti-archive"></i></th>
                       </tr>
                     </thead>
                     <tbody id="tableBody">
                       {{!-- Aqui se carga desde JavaScript --}}
                     </tbody>
                   </table>
+                  <button class="btn_pagar_pagadas" id="btn_pagar_pagadas">¿Pagar Seleccionadas?</button>
                 </div>
           </div>
 			  </div>
@@ -58,11 +62,20 @@
         {{!-- Información para las compras ya guardadas --}}
         <div class="json_cargar" id="info_pestania-2">
           <h1>Total compras al crédito:</h1>
-          <h1 class="info">$ 0.00{{!-- Aqui se carga desde JavaScript --}}</h1>
+          <h1 class="info">$ <span id="info_total_nnc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
           <h1>Total notas de crédito:</h1>
-          <h1 class="info">$ 0.000{{!-- Aqui se carga desde JavaScript --}}</h1>
+          <h1 class="info_nc">- $ <span id="info_total_nc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
           <h1>Operación:</h1>
-          <h1 class="info">$ 0.0000{{!-- Aqui se carga desde JavaScript --}}</h1>
+          <h1 class="info">$ <span id="info_total"></span>{{!-- Aqui se carga desde JavaScript --}}</h1>
+        </div>
+        {{!-- Información para las compras ya pagadas --}}
+        <div class="json_cargar" id="info_pestania-3">
+          {{!-- <h1>Total compras al crédito:</h1>
+          <h1 class="info">$ <span id="info_total_nnc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
+          <h1>Total notas de crédito:</h1>
+          <h1 class="info_nc">- $ <span id="info_total_nc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
+          <h1>Operación:</h1>
+          <h1 class="info">$ <span id="info_total"></span>{{!-- Aqui se carga desde JavaScript --}}</h1> --}}
         </div>
       </div>
 		</section>

@@ -656,6 +656,14 @@ ul {
   padding: 5px;
 }
 
+.json_cargar h1.info_nc {
+  font-size: 20px;
+  color: var(--color_danger);
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
 .json_cargar h3.info {
   font-size: 12px;
   color: var(--color_negro);
@@ -674,6 +682,10 @@ table {
   width: 100%;
   border-collapse: collapse;
   background-color: white;
+}
+
+tr.red td {
+  color: var(--color_danger);
 }
 
 th,
@@ -717,4 +729,45 @@ button.filtar_table:hover {
   border: 1px solid var(--color_celeste);
   background: var(--color_celeste);
   transition: 0.5s;
+}
+
+button.btn_pagar_pagadas {
+  margin: 20px 0;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 8px 10px 7px 10px;
+  border-radius: none;
+  border: 1px solid var(--main_color);
+  background: var(--main_color);
+  color: var(--color_white);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.5s;
+}
+
+button.btn_pagar_pagadas:hover {
+  border: 1px solid var(--color_celeste);
+  background: var(--color_celeste);
+  transition: 0.5s;
+}
+
+button.btn_table_delete {
+  border: none;
+  border-radius: 4px;
+  padding: 6px 7px;
+  font-size: 20px;
+  background: rgb(255 109 109);
+  color: var(--color_white);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button.btn_table_delete:hover {
+  background: var(--color_danger);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.center_text {
+  text-align: center;
 }

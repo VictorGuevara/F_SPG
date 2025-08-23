@@ -373,8 +373,8 @@ router.post('/list_compras_SI', isLoggedIn, async (req, res) => {
 	// Hacemos una validación.
 	if (n_prov == '%%') {
 		await pool.query(
-			`SELECT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_montoTotalOperacion, resumen_totalPagar, estado_pago FROM fsp_compras_si WHERE estado_pago = ? AND (ident_fecEmi BETWEEN ? AND ?) OR emisor_nombre LIKE ? GROUP BY ident_codigoGeneracion`,
-			[estado, f_i, f_f, n_prov, estado],
+			`SELECT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_montoTotalOperacion, resumen_totalPagar, estado_pago FROM fsp_compras_si WHERE estado_pago = ? GROUP BY ident_codigoGeneracion`,
+			[estado],
 			async (error, rows, fields) => {
 				res.json(rows);
 			}
@@ -409,6 +409,33 @@ router.post('/g_compras_pagadas', isLoggedIn, async (req, res) => {
 			res.json({ mensaje: 'Compras pagadas.' });
 		}
 	});
+});
+
+// Ruta para listar las compras y notas de créditos pagados...
+router.post('/list_compras_pagadas', isLoggedIn, async (req, res) => {
+	let f_i = req.body.fecha_i;
+	let f_f = req.body.fecha_f;
+	let n_prov = '%' + req.body.nombre_proveedor + '%';
+	let estado = 'Pagado';
+
+	// Hacemos una validación.
+	if (n_prov == '%%') {
+		await pool.query(
+			`SELECT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_montoTotalOperacion, resumen_totalPagar, estado_pago FROM fsp_compras_si WHERE estado_pago = ? GROUP BY ident_codigoGeneracion`,
+			[estado],
+			async (error, rows, fields) => {
+				res.json(rows);
+			}
+		);
+	} else {
+		await pool.query(
+			`SELECT ident_codigoGeneracion, ident_numeroControl, emisor_nombre, resumen_montoTotalOperacion, resumen_totalPagar, estado_pago FROM fsp_compras_si WHERE estado_pago = ? AND (ident_fecEmi BETWEEN ? AND ?) AND emisor_nombre LIKE ? GROUP BY ident_codigoGeneracion`,
+			[estado, f_i, f_f, n_prov],
+			async (error, rows, fields) => {
+				res.json(rows);
+			}
+		);
+	}
 });
 
 /* -------------------------------------------------------------------------- */

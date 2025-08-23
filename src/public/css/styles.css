@@ -768,6 +768,24 @@ button.btn_table_delete:hover {
   transition: 0.3s;
 }
 
+button.btn_table_reverse {
+  border: none;
+  border-radius: 4px;
+  padding: 6px 7px;
+  font-size: 20px;
+  font-weight: bold;
+  background: var(--verde_suave);
+  color: var(--color_white);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button.btn_table_reverse:hover {
+  background: var(--verde);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
 .center_text {
   text-align: center;
 }

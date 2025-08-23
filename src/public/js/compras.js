@@ -9,11 +9,14 @@ const list_jsonComprasNoIngresadas = document.getElementById('list_jsonComprasNo
 // Campos de filtros.
 let fecha_inicio = document.getElementById('fecha_inicio');
 let fecha_final = document.getElementById('fecha_final');
-let nompre_proveedor = document.getElementById('busqueda_proveedor');
+let nombre_proveedor = document.getElementById('busqueda_proveedor');
 let listProveedores = document.getElementById('lista_proveedores');
 let btnFilter = document.getElementById('btn_filter');
 let tbody_cg = document.getElementById('tableBody');
 let btnPagar = document.getElementById('btn_pagar_pagadas');
+let nombre_proveedor_p = document.getElementById('busqueda_proveedor_p');
+let btnFilter_p = document.getElementById('btn_filter_p');
+let tbody_cp = document.getElementById('tableBody_cync_p');
 
 // De información.
 let ruta_carga = document.getElementById('h3_ruta_carga');
@@ -309,7 +312,7 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 const list_proveedores = async () => {
 	// Objeto de datos.
 	let dae = {
-		provName: nompre_proveedor.value,
+		provName: nombre_proveedor.value,
 	};
 
 	// consultamos para guardar los datos de los clientes en la encomienda...
@@ -344,7 +347,7 @@ const list_compras_guardadas = async () => {
 	let datos_filtro = {
 		fecha_i: fecha_inicio.value,
 		fecha_f: fecha_final.value,
-		nombre_proveedor: nompre_proveedor.value,
+		nombre_proveedor: nombre_proveedor.value,
 	};
 
 	// consultamos para guardar los datos de los clientes en la encomienda...
@@ -383,7 +386,7 @@ const list_compras_guardadas = async () => {
                         <td>$ <span class="valor">${total_factura}</span></td>
                         <td><span class="valor">${datos[i].estado_pago}</span></td>
                         <td class="center_text">
-                        	<button class="btn_table_delete"><i class="ti-trash"></i></button>
+                        	<button class="btn_table_delete" onclick="eliminar_registro('${datos[i].ident_codigoGeneracion}')"><i class="ti-trash"></i></button>
                         </td>
                     </tr>
 				`;
@@ -396,6 +399,7 @@ const list_compras_guardadas = async () => {
 	await actualizarTotal();
 };
 
+// Función que actualiza el total de los montos de las filas seleccionadas.
 const actualizarTotal = () => {
 	// Variables que capturan los datos.
 	let checkboxes = document.querySelectorAll('.fila_checkbox');
@@ -459,7 +463,7 @@ const guardar_cnc_selecionados = async () => {
 	let filas_selec = seleccionadas.length;
 
 	// Validamos que los campos requeridos esten llenos.
-	if (nompre_proveedor.value == '') {
+	if (nombre_proveedor.value == '') {
 		await Swal.fire({
 			icon: 'error',
 			title: 'Campo Requerido',
@@ -486,7 +490,7 @@ const guardar_cnc_selecionados = async () => {
 			const checkbox = filas[i].querySelector("input[type='checkbox']");
 			const idhCodGeneracion = filas[i].querySelector("input[name='id_h_codGeneracion']");
 			if (checkbox && checkbox.checked) {
-				let n_proveedor = nompre_proveedor.value;
+				let n_proveedor = nombre_proveedor.value;
 				let n_generacion = idhCodGeneracion.value;
 				let monto = parseFloat(filas[i].querySelector('td span.valor').innerText);
 
@@ -522,6 +526,80 @@ const guardar_cnc_selecionados = async () => {
 	}
 };
 
+// Función que lista los datos en la tabla de compras pagadas.
+const list_compras_pagadas = async () => {
+	// Validamos que los datos no esten vacios.
+	if (fecha_inicio_p.value == '' || fecha_final_p.value == '') {
+		fecha_inicio_p.value = fecha_a();
+		fecha_final_p.value = fecha_a();
+	}
+
+	// datos json:
+	let datos_filtro = {
+		fecha_i: fecha_inicio_p.value,
+		fecha_f: fecha_final_p.value,
+		nombre_proveedor: nombre_proveedor_p.value,
+	};
+
+	// consultamos para guardar los datos de los clientes en la encomienda...
+	await fetch('/compras/list_compras_pagadas', {
+		method: 'POST',
+		body: JSON.stringify(datos_filtro),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+		.then((response) => response.json())
+		.then((datos) => {
+			tbody_cp.innerHTML = '';
+			for (var i = 0; i < datos.length; i++) {
+				let clase_css_tr = '';
+				let tipe_check_nc = '';
+				let total_factura = 0;
+				let nControlDTE = JSON.stringify(datos[i].ident_numeroControl).replace(/"/g, '');
+
+				// Validamos si es nota de crédito...
+				if (nControlDTE.indexOf('DTE-05') !== -1) {
+					clase_css_tr = 'red';
+					tipe_check_nc = '_ntc';
+					total_factura = datos[i].resumen_montoTotalOperacion;
+				} else {
+					tipe_check_nc = '';
+					clase_css_tr = '';
+					total_factura = datos[i].resumen_totalPagar;
+				}
+
+				tbody_cp.innerHTML += `
+					<tr class="${clase_css_tr}">
+                        <td class="center_text"><input type="checkbox" class="fila_checkbox${tipe_check_nc}"></td>
+                        <td><input type="hidden" name="id_h_codGeneracion" value="${datos[i].ident_codigoGeneracion}">${datos[i].ident_numeroControl}</td>
+                        <td>${datos[i].emisor_nombre}</td>
+                        <td>$ <span class="valor">${total_factura}</span></td>
+                        <td><span class="valor">${datos[i].estado_pago}</span></td>
+                        <td class="center_text">
+                        	<button class="btn_table_reverse" onclick="pasar_aNoPagado('${datos[i].ident_codigoGeneracion}')"><i class="ti-back-left"></i></button>
+                        </td>
+                    </tr>
+				`;
+			}
+		})
+		.catch((error) => {
+			console.error('Ocurrio un error: ', error);
+		});
+
+	await actualizarTotal();
+};
+
+// Función que elimina la compra registrada proveniente del JSON.
+const eliminar_registro = (reg_codGeneracion) => {
+	console.log(reg_codGeneracion);
+};
+
+// Función que elimina la compra pagada y la pasa a compra no pagada.
+const pasar_aNoPagado = (reg_codGeneracion) => {
+	console.log(reg_codGeneracion);
+};
+
 /* -------------------------------------------------------------------------- */
 /*                                                                            */
 /*                                  EVENTOS                                   */
@@ -533,30 +611,45 @@ setTimeout(async () => {
 	await leer_json_data();
 	await list_proveedores();
 	await list_compras_guardadas();
+	await list_compras_pagadas();
 	await actualizarTotal();
 }, 500);
 
-// Evento de escritura para el campo de proveedores
-nompre_proveedor.addEventListener('input', async (event) => {
+// Evento de escritura para el campo de proveedores.
+nombre_proveedor.addEventListener('input', async (event) => {
 	event.preventDefault();
 	await list_proveedores();
 	await list_compras_guardadas();
 });
 
 // Evento doble clic para limpiar el campo de proveedor.
-nompre_proveedor.addEventListener('dblclick', async (event) => {
+nombre_proveedor.addEventListener('dblclick', async (event) => {
 	event.preventDefault();
-	nompre_proveedor.value = '';
+	nombre_proveedor.value = '';
 });
 
-// Evento clic para el boton de filtrar
+// Evento clic para el boton de filtrar.
 btnFilter.addEventListener('click', async (event) => {
 	event.preventDefault();
 	await list_compras_guardadas();
+	await list_compras_pagadas();
 });
 
 // Evento click para le boton de pagar seleccionadas.
 btnPagar.addEventListener('click', async (event) => {
 	event.preventDefault();
 	await guardar_cnc_selecionados();
+});
+
+// Evento clic para el boton de filtrar las compras pagadas.
+btnFilter_p.addEventListener('click', async () => {
+	await list_compras_pagadas();
+	await list_compras_guardadas();
+});
+
+// Evento de escritura para el campo de proveedores de compras pagadas.
+nombre_proveedor_p.addEventListener('input', async (event) => {
+	event.preventDefault();
+	await list_proveedores();
+	await list_compras_pagadas();
 });

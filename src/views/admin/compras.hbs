@@ -1,83 +1,102 @@
-<div class="main_content">
-	<main>
-		<section>
-			<h1>Compras</h1>
-			<h3 class="ruta_system">Administración / Contabilidad / Compras</h3>
-		</section>
-		<br>
-		<section class="vista_compras">
-		<div class="tabs">
-			<div class="tab-buttons">
-				<button class="tab-button active" data-tab="1">COMPRAS POR INGRESAR</button>
-				<button class="tab-button" data-tab="2">COMPRAS INGRESADAS</button>
-        <button class="tab-button" data-tab="3">COMPRAS PAGADAS</button>
-			</div>
-			<div class="tab-content">
-				<section class="tab-panel active" id="tab-1">
-					<div class="container_list">
-							<div id="list_jsonComprasNoIngresadas">
-    						{{!-- Aqui se cargan desde JavaScript --}}
-						  </div>
-					 </div>
-				  </section>
-			  	<div class="tab-panel" id="tab-2">
-            <div class="filtros_datos">
-              <input class="input_filter_table" type="date" id="fecha_inicio">
-              <input class="input_filter_table" type="date" id="fecha_final">
-              <input class="input_filter_table" type="text" id="busqueda_proveedor" list="lista_proveedores">
-              <button class="filtar_table" id="btn_filter">Filtrar</button>
-              <datalist id="lista_proveedores"></datalist>
-              <option value=""></option>
+<div class='main_content'>
+  <main>
+    <section>
+      <h1>Compras</h1>
+      <h3 class='ruta_system'>Administración / Contabilidad / Compras</h3>
+    </section>
+    <br />
+    <section class='vista_compras'>
+      <div class='tabs'>
+        <div class='tab-buttons'>
+          <button class='tab-button active' data-tab='1'>COMPRAS POR INGRESAR</button>
+          <button class='tab-button' data-tab='2'>COMPRAS INGRESADAS</button>
+          <button class='tab-button' data-tab='3'>COMPRAS PAGADAS</button>
+        </div>
+        <div class='tab-content'>
+          <section class='tab-panel active' id='tab-1'>
+            <div class='container_list'>
+              <div id='list_jsonComprasNoIngresadas'>
+                {{! Aqui se cargan desde JavaScript }}
+              </div>
             </div>
-                <div class="table-container">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th class="center_text"><i class="ti-check-box"></i></th>
-                        <th>No. DTE:</th>
-                        <th>PROVEEDOR:</th>
-                        <th>TOTAL:</th>
-                        <th>ESTADO:</th>
-                        <th class="center_text"><i class="ti-archive"></i></th>
-                      </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                      {{!-- Aqui se carga desde JavaScript --}}
-                    </tbody>
-                  </table>
-                  <button class="btn_pagar_pagadas" id="btn_pagar_pagadas">¿Pagar Seleccionadas?</button>
-                </div>
-          </div>
-			  </div>
-		  </div>
-      <div class="datos_utilidad">
-        <div class="json_cargar active" id="info_pestania-1">
-          <h1>Carpeta Elegída:</h1>
-          <h3 class="info" id="h3_ruta_carga">{{!-- Aqui se carga desde JavaScript --}}</h3>
-          <h1>Cantidad de JSON encontrados:</h1>
-          <h1 class="info" id="h1_cantJsons">{{!-- Aqui se carga desde JavaScript --}}</h1>
-          <h1>Carpeta donde se guardan los JSON registrados:</h1>
-          <h3 class="info" id="h3_ruta_destino">{{!-- Aqui se carga desde JavaScript --}}</h3>
-        </div>
-        {{!-- Información para las compras ya guardadas --}}
-        <div class="json_cargar" id="info_pestania-2">
-          <h1>Total compras al crédito:</h1>
-          <h1 class="info">$ <span id="info_total_nnc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
-          <h1>Total notas de crédito:</h1>
-          <h1 class="info_nc">- $ <span id="info_total_nc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
-          <h1>Operación:</h1>
-          <h1 class="info">$ <span id="info_total"></span>{{!-- Aqui se carga desde JavaScript --}}</h1>
-        </div>
-        {{!-- Información para las compras ya pagadas --}}
-        <div class="json_cargar" id="info_pestania-3">
-          {{!-- <h1>Total compras al crédito:</h1>
-          <h1 class="info">$ <span id="info_total_nnc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
-          <h1>Total notas de crédito:</h1>
-          <h1 class="info_nc">- $ <span id="info_total_nc">{{!-- Aqui se carga desde JavaScript --}}</span></h1>
-          <h1>Operación:</h1>
-          <h1 class="info">$ <span id="info_total"></span>{{!-- Aqui se carga desde JavaScript --}}</h1> --}}
+          </section>
+          <section class='tab-panel' id='tab-2'>
+            <div class='filtros_datos'>
+              <input class='input_filter_table' type='date' id='fecha_inicio' />
+              <input class='input_filter_table' type='date' id='fecha_final' />
+              <input class='input_filter_table' type='text' id='busqueda_proveedor' list='lista_proveedores' />
+              <button class='filtar_table' id='btn_filter'>Filtrar</button>
+            </div>
+            <div class='table-container'>
+              <table>
+                <thead>
+                  <tr>
+                    <th class='center_text'><i class='ti-check-box'></i></th>
+                    <th>No. DTE:</th>
+                    <th>PROVEEDOR:</th>
+                    <th>TOTAL:</th>
+                    <th>ESTADO:</th>
+                    <th class='center_text'><i class='ti-archive'></i></th>
+                  </tr>
+                </thead>
+                <tbody id='tableBody'>
+                  {{! Aqui se carga desde JavaScript }}
+                </tbody>
+              </table>
+              <button class='btn_pagar_pagadas' id='btn_pagar_pagadas'>¿Pagar Seleccionadas?</button>
+            </div>
+          </section>
+          <section class='tab-panel' id='tab-3'>
+            <div class='filtros_datos'>
+              <input class='input_filter_table' type='date' id='fecha_inicio_p' />
+              <input class='input_filter_table' type='date' id='fecha_final_p' />
+              <input class='input_filter_table' type='text' id='busqueda_proveedor_p' list='lista_proveedores' />
+              <button class='filtar_table' id='btn_filter_p'>Filtrar</button>
+            </div>
+            <div class='table-container'>
+              <table>
+                <thead>
+                  <tr>
+                    <th class='center_text'><i class='ti-check-box'></i></th>
+                    <th>No. DTE:</th>
+                    <th>PROVEEDOR:</th>
+                    <th>TOTAL:</th>
+                    <th>ESTADO:</th>
+                    <th class='center_text'><i class='ti-archive'></i></th>
+                  </tr>
+                </thead>
+                <tbody id='tableBody_cync_p'>
+                  {{! Aqui se carga desde JavaScript }}
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
       </div>
-		</section>
-	</main>
+      <div class='datos_utilidad'>
+        <div class='json_cargar active' id='info_pestania-1'>
+          <h1>Carpeta Elegída:</h1>
+          <h3 class='info' id='h3_ruta_carga'>{{! Aqui se carga desde JavaScript }}</h3>
+          <h1>Cantidad de JSON encontrados:</h1>
+          <h1 class='info' id='h1_cantJsons'>{{! Aqui se carga desde JavaScript }}</h1>
+          <h1>Carpeta donde se guardan los JSON registrados:</h1>
+          <h3 class='info' id='h3_ruta_destino'>{{! Aqui se carga desde JavaScript }}</h3>
+        </div>
+        {{! Información para las compras ya guardadas }}
+        <div class='json_cargar' id='info_pestania-2'>
+          <h1>Total compras al crédito:</h1>
+          <h1 class='info'>$ <span id='info_total_nnc'>{{! Aqui se carga desde JavaScript }}</span></h1>
+          <h1>Total notas de crédito:</h1>
+          <h1 class='info_nc'>- $ <span id='info_total_nc'>{{! Aqui se carga desde JavaScript }}</span></h1>
+          <h1>Operación:</h1>
+          <h1 class='info'>$ <span id='info_total'></span>{{! Aqui se carga desde JavaScript }}</h1>
+        </div>
+        {{! Información para las compras ya pagadas }}
+        <div class='json_cargar' id='info_pestania-3'>
+
+        </div>
+      </div>
+    </section>
+    <datalist id='lista_proveedores'></datalist>
+  </main>
 </div>

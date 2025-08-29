@@ -149,7 +149,7 @@ const leer_json_data = async () => {
 								<section class="facE_acciones">
 									<h2>Acciones</h2>
 									<button class="btn_guardar" onclick="guardar_compra_si('${datos.files[i].file}', '${d_r_nc}')">Guardar</button>
-									<button class="btn_eliminar">Eliminar</button>
+									<button class="btn_eliminar" onclick="eliminar_compra_json_si('${datos.files[i].file}')">Eliminar</button>
 								</section>
 							</article>
 							<br>
@@ -221,7 +221,7 @@ const leer_json_data = async () => {
 								<section class="facE_acciones">
 									<h2>Acciones</h2>
 									<button class="btn_guardar" onclick="guardar_compra_si('${datos.files[i].file}', '${d_r}')">Guardar</button>
-									<button class="btn_eliminar">Eliminar</button>
+									<button class="btn_eliminar" onclick="eliminar_compra_json_si('${datos.files[i].file}')">Eliminar</button>
 								</section>
 							</article>
 							<br>
@@ -260,7 +260,7 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 		data_dr: datos_dr,
 	};
 
-	// consultamos para guardar los datos de los clientes en la encomienda...
+	// Consultamos la ruta.
 	await fetch('/compras/g_compra_SI', {
 		method: 'POST',
 		body: JSON.stringify(nombreJSON),
@@ -308,6 +308,48 @@ const guardar_compra_si = async (nombre_json, datos_dr) => {
 		});
 };
 
+// Función que elimina el archivo JSON.
+const eliminar_compra_json_si = async (nombre_json) => {
+	// Objeto de datos.
+	let dato_nombre = {
+		nameArchivoJSON: nombre_json,
+	};
+
+	// Consultamos para eliminar el archivo JSON....
+	await fetch('/compras/eliminar_archivoJSON', {
+		method: 'POST',
+		body: JSON.stringify(dato_nombre),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+		.then((response) => response.json())
+		.then((datos) => {
+			if (datos.mensaje == 'Archivo Eliminado.') {
+				setTimeout(async () => {
+					await Swal.fire({
+						icon: 'success',
+						title: datos.mensaje,
+					});
+					await leer_json_data();
+				}, 250);
+			} else if (datos.mensaje == 'El archivo no existe.') {
+				setTimeout(async () => {
+					await Swal.fire({
+						icon: 'error',
+						title: datos.mensaje,
+					});
+					await leer_json_data();
+				}, 250);
+			}
+			{
+			}
+		})
+		.catch((error) => {
+			console.error('Ocurrio un error: ', error);
+		});
+};
+
 // Función que lista los proveedores para la lista del campo.
 const list_proveedores = async () => {
 	// Objeto de datos.
@@ -315,7 +357,7 @@ const list_proveedores = async () => {
 		provName: nombre_proveedor.value,
 	};
 
-	// consultamos para guardar los datos de los clientes en la encomienda...
+	// Consultamos la ruta.
 	await fetch('/compras/list_proveedores', {
 		method: 'POST',
 		body: JSON.stringify(dae),
@@ -350,7 +392,7 @@ const list_compras_guardadas = async () => {
 		nombre_proveedor: nombre_proveedor.value,
 	};
 
-	// consultamos para guardar los datos de los clientes en la encomienda...
+	// Consultamos la ruta.
 	await fetch('/compras/list_compras_SI', {
 		method: 'POST',
 		body: JSON.stringify(datos_filtro),
@@ -483,6 +525,7 @@ const guardar_cnc_selecionados = async () => {
 		});
 	} else {
 		// Array que guarda los datos a acutalizar...
+		let obj_datos_actualizar = 0;
 		let datos_actualizar = [];
 
 		// Recorremos todas las filas seleccionadas.
@@ -494,35 +537,74 @@ const guardar_cnc_selecionados = async () => {
 				let n_generacion = idhCodGeneracion.value;
 				let monto = parseFloat(filas[i].querySelector('td span.valor').innerText);
 
+				// Agregamos los datos al objeto.
+				obj_datos_actualizar = {
+					id: n_generacion,
+					proveedor: n_proveedor,
+					monto: monto,
+					estado: 'Pagado',
+				};
+
 				// Agregamos los objetos de datos...
-				datos_actualizar.push({ id: n_generacion, proveedor: n_proveedor, monto: monto, estado: 'Pagado' });
+				datos_actualizar.push(obj_datos_actualizar);
 			}
 		}
 
-		await fetch('/compras/g_compras_pagadas', {
-			method: 'POST',
-			body: JSON.stringify(datos_actualizar),
-			headers: {
-				'Content-Type': 'application/json',
+		// Alerta...
+		Swal.fire({
+			title: '¡Elige una forma de pago!',
+			html: `
+	            <input type="text" class="swal2-input" id="tipo_pago" placeholder="* Tipo de pago:" list="lista_tipo_pago">
+	            <datalist id="lista_tipo_pago">
+		            <option value="Efectivo">
+		            <option value="Transferencia">
+		            <option value="Cheque">
+	            </datalist>
+	        `,
+			showCancelButton: true,
+			confirmButtonText: 'Pagar',
+			showLoaderOnConfirm: true,
+			preConfirm: () => {
+				let i_tipo_pago = document.getElementById('tipo_pago').value;
+
+				// Agregamos al objeto para enviarlo.
+				datos_actualizar.forEach((obj) => {
+					obj.tipo_pago = i_tipo_pago;
+				});
+
+				// Al confirmar, retornamos la consulta para guardar.
+				return fetch('/compras/g_compras_pagadas', {
+					method: 'PUT',
+					body: JSON.stringify(datos_actualizar),
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error(response.statusText);
+						}
+						return response.json();
+					})
+					.then((datos) => {
+						if (datos.mensaje == 'Compras pagadas.') {
+							setTimeout(async () => {
+								await Swal.fire({
+									icon: 'success',
+									title: datos.mensaje,
+								});
+								await leer_json_data();
+								await list_proveedores();
+								await list_compras_guardadas();
+								await list_compras_pagadas();
+							}, 250);
+						}
+					})
+					.catch((error) => {
+						Swal.showValidationMessage(`Ocurrio un error: ${error}`);
+					});
 			},
-		})
-			.then((response) => response.json())
-			.then((datos) => {
-				if (datos.mensaje == 'Compras pagadas.') {
-					setTimeout(async () => {
-						await Swal.fire({
-							icon: 'success',
-							title: datos.mensaje,
-						});
-						await leer_json_data();
-						await list_proveedores();
-						await list_compras_guardadas();
-					}, 250);
-				}
-			})
-			.catch((error) => {
-				console.error('Ocurrio un error: ', error);
-			});
+		});
 	}
 };
 
@@ -541,7 +623,7 @@ const list_compras_pagadas = async () => {
 		nombre_proveedor: nombre_proveedor_p.value,
 	};
 
-	// consultamos para guardar los datos de los clientes en la encomienda...
+	// Consultamos la ruta.
 	await fetch('/compras/list_compras_pagadas', {
 		method: 'POST',
 		body: JSON.stringify(datos_filtro),
@@ -591,13 +673,86 @@ const list_compras_pagadas = async () => {
 };
 
 // Función que elimina la compra registrada proveniente del JSON.
-const eliminar_registro = (reg_codGeneracion) => {
-	console.log(reg_codGeneracion);
+const eliminar_registro = async (reg_codGeneracion) => {
+	// Capturamos el codigo del registro y lo guardamos en un objeto.
+	let dato_cg = { codGen: reg_codGeneracion };
+
+	// consultamos para actualizar la columna de estado de pago...
+	await fetch('/compras/delete_compra_registrada', {
+		method: 'POST',
+		body: JSON.stringify(dato_cg),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+		.then((response) => response.json())
+		.then((datos) => {
+			// Devolvemos el mensaje.
+			if (
+				datos.mensaje == 'El archivo JSON no fue encontrado para moverlo.' ||
+				datos.mensaje == 'El archivo JSON fue encontrado y movido de la carpeta.'
+			) {
+				setTimeout(async () => {
+					await Swal.fire({
+						icon: 'success',
+						title: 'Compra eliminada.',
+						text: datos.mensaje,
+					});
+					await leer_json_data();
+					await list_proveedores();
+					await list_compras_guardadas();
+					await list_compras_pagadas();
+				}, 250);
+			} else {
+				setTimeout(async () => {
+					await Swal.fire({
+						icon: 'success',
+						title: 'Compra eliminada.',
+					});
+					await leer_json_data();
+					await list_proveedores();
+					await list_compras_guardadas();
+					await list_compras_pagadas();
+				}, 250);
+			}
+		})
+		.catch((error) => {
+			console.error('Ocurrio un error: ', error);
+		});
 };
 
 // Función que elimina la compra pagada y la pasa a compra no pagada.
-const pasar_aNoPagado = (reg_codGeneracion) => {
-	console.log(reg_codGeneracion);
+const pasar_aNoPagado = async (reg_codGeneracion) => {
+	// Capturamos el codigo del registro y lo guardamos en un objeto.
+	let dato_cg = { codGen: reg_codGeneracion };
+
+	// consultamos para actualizar la columna de estado de pago...
+	await fetch('/compras/edit_estado_pago', {
+		method: 'POST',
+		body: JSON.stringify(dato_cg),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+		.then((response) => response.json())
+		.then((datos) => {
+			// Devolvemos el mensaje.
+			if (datos.mensaje == 'Compra devuelta a no pagadas.') {
+				setTimeout(async () => {
+					await Swal.fire({
+						icon: 'success',
+						title: datos.mensaje,
+					});
+					await leer_json_data();
+					await list_proveedores();
+					await list_compras_guardadas();
+					await list_compras_pagadas();
+				}, 250);
+			}
+		})
+		.catch((error) => {
+			console.error('Ocurrio un error: ', error);
+		});
 };
 
 /* -------------------------------------------------------------------------- */
@@ -639,6 +794,7 @@ btnFilter.addEventListener('click', async (event) => {
 btnPagar.addEventListener('click', async (event) => {
 	event.preventDefault();
 	await guardar_cnc_selecionados();
+	await list_compras_pagadas();
 });
 
 // Evento clic para el boton de filtrar las compras pagadas.

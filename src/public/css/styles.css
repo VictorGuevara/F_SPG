@@ -482,7 +482,8 @@ article {
   box-shadow: 0 0 10px var(--text_grey);
 }
 
-article.notaDeCredito {
+article.notaDeCredito,
+article.notaDeCredito table tbody tr td {
   background: var(--rojo_ultraclaro);
 }
 

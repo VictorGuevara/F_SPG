@@ -348,6 +348,23 @@ router.post('/g_compra_SI', isLoggedIn, async (req, res) => {
 	);
 });
 
+// Ruta para eliminar el archivo JSON de la carpeta.
+router.post('/eliminar_archivoJSON', isLoggedIn, async (req, res) => {
+	const nombre_archivo = req.body.nameArchivoJSON;
+	const rutaArchivo = path.join(ruta_carp_descargas, nombre_archivo);
+
+	// Validamos si existe el archivo.
+	if (fs.existsSync(rutaArchivo)) {
+		// Eliminamos.
+		fs.unlinkSync(rutaArchivo);
+
+		// Devolvemos el mensaje para el usuario.
+		res.json({ mensaje: 'Archivo Eliminado.' });
+	} else {
+		res.json({ mensaje: 'El archivo no existe.' });
+	}
+});
+
 // Ruta para listar los proveedores.
 router.post('/list_proveedores', isLoggedIn, async (req, res) => {
 	// Obtenemos el dato enviado por el usuario.
@@ -363,7 +380,7 @@ router.post('/list_proveedores', isLoggedIn, async (req, res) => {
 	);
 });
 
-// Ruta para listar las compras guard
+// Ruta para listar las compras guardadas.
 router.post('/list_compras_SI', isLoggedIn, async (req, res) => {
 	let f_i = req.body.fecha_i;
 	let f_f = req.body.fecha_f;
@@ -391,7 +408,7 @@ router.post('/list_compras_SI', isLoggedIn, async (req, res) => {
 });
 
 // Ruta para actuzalizar las filas seleccionadas en pagos...
-router.post('/g_compras_pagadas', isLoggedIn, async (req, res) => {
+router.put('/g_compras_pagadas', isLoggedIn, async (req, res) => {
 	// Datos a actualizar
 	let updates = req.body;
 
@@ -409,6 +426,42 @@ router.post('/g_compras_pagadas', isLoggedIn, async (req, res) => {
 			res.json({ mensaje: 'Compras pagadas.' });
 		}
 	});
+});
+
+// Ruta para eliminar la compra de la lista y devolver el archivo JSON a la carpeta inicial.
+router.post('/delete_compra_registrada', isLoggedIn, async (req, res) => {
+	// Datos a utilizar para mover el archivo.
+	const cod_gen = req.body.codGen;
+	const carp_origen = path.join(process.env.HOME || process.env.USERPROFILE, 'Downloads/ComprasGuardadas');
+	const carp_destino = ruta_carp_descargas;
+	const estado_actual = 'No Pagado';
+
+	// Leer todos los archivos en la carpeta origen
+	const archivos_json = fs.readdirSync(carp_origen);
+
+	// Primero eliminamos de la base de datos...
+	await pool.query(
+		`DELETE FROM fsp_compras_si WHERE estado_pago = ? AND ident_codigoGeneracion = ?`,
+		[estado_actual, cod_gen],
+		async (error, rows, fields) => {
+			if (!error) {
+				// Si no existe error, buscamos el archivo en la carpeta de JSON guadados.
+				const archivoEncontrado = archivos_json.find((nombre) => nombre.includes(cod_gen) && nombre.endsWith('.json'));
+
+				// Validamos si el archivo no existe
+				if (!archivoEncontrado) {
+					res.json({ mensaje: 'El archivo JSON no fue encontrado para moverlo.' });
+				} else {
+					const rutaOrigen = path.join(carp_origen, archivoEncontrado);
+					const rutaDestino = path.join(carp_destino, archivoEncontrado);
+
+					// Mover el archivo
+					fs.renameSync(rutaOrigen, rutaDestino);
+					res.json({ mensaje: 'El archivo JSON fue encontrado y movido de la carpeta.' });
+				}
+			}
+		}
+	);
 });
 
 // Ruta para listar las compras y notas de créditos pagados...
@@ -436,6 +489,25 @@ router.post('/list_compras_pagadas', isLoggedIn, async (req, res) => {
 			}
 		);
 	}
+});
+
+// Ruta para actuzalizar la compra a estado no pagada.
+router.post('/edit_estado_pago', isLoggedIn, async (req, res) => {
+	// Datos a actualizar
+	let cod_gen = req.body.codGen;
+	let nuevo_estado = 'No Pagado';
+
+	// Ejecución de la consulta
+	await pool.query(
+		`UPDATE fsp_compras_si SET estado_pago = ? WHERE ident_codigoGeneracion = ?`,
+		[nuevo_estado, cod_gen],
+		async (error, rows, fields) => {
+			if (!error) {
+				// Si no existe error, devolvemos el mensaje.
+				res.json({ mensaje: 'Compra devuelta a no pagadas.' });
+			}
+		}
+	);
 });
 
 /* -------------------------------------------------------------------------- */
